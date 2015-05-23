@@ -1,26 +1,36 @@
-object Sudoku {
-  def main(args: Array[String]) = {
-    val state = new Sudoku
-    println(state.toString())
-    println("Eventually this will do stuff with Sudoku Puzzles.")
-  }
-}
-
-class Sudoku {
-
-  val puzzle = Array(
-    0,0,6,0,0,7,3,0,0,
-    0,1,8,0,0,9,0,5,0,
-    5,0,0,0,0,0,0,6,4,
-    9,2,0,0,8,0,0,0,0,
-    0,0,0,7,6,3,0,0,0,
-    0,0,0,0,9,0,0,7,5,
-    6,3,0,0,0,0,0,0,8,
-    0,9,0,3,0,0,5,2,0,
-    0,0,2,4,0,0,6,0,0
-    )
+class Sudoku (val grid: Array[Int]){
+  val numCols = 9
+  val numRows = 9
+  val numSubCols = 3
+  val numSubRows = 3
 
   override def toString(): String = {
-    "Betcha wish this was a sudoku"
+    gridToString(grid)
+  }
+
+  private def gridToString(grid: Array[Int]): String = {
+    val rawRows = grid.grouped(numCols)
+    val rowStrings = rawRows.map((row) => rowToString(row))
+    val partitionedRowStrings = rowStrings.grouped(numSubRows)
+    val combinedRowStrings = partitionedRowStrings.map((part) => part.mkString("\n"))
+    combinedRowStrings.mkString("\n" + ("-"*numCols) + ("-"*((numCols/numSubCols)-1)) + "\n")
+  }
+
+  private def rowToString(row: Array[Int]): String = {
+    val partitioned = row.grouped(numSubCols)
+    val stringPartitioned = partitioned.map((part) => part.mkString(""))
+    stringPartitioned.mkString("|")
+  }
+
+  def coordOneDimensionToTwo(i: Int) : Tuple2[Int,Int] = {
+    (i % numCols, i / numCols)
+  }
+
+  def coordTwoDimensionToOne(x: Int, y: Int) : Int = {
+    x + (y * numCols)
+  }
+
+  def getValueAtIndex(x: Int, y: Int): Int = {
+    grid(coordTwoDimensionToOne(x,y))
   }
 }

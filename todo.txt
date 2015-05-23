@@ -1,0 +1,13 @@
+The sudoku application should be separated into the following files:
+
+-Hanzo : Object : The static object defining the entry point to the application.
+-Hanzo : Class : The class which will contain the logic for solving a sudoku puzzle
+-Sudoku : Class : The class which will wrap the structure of the puzzle
+--Methods will include a toString function which will print the puzzle.
+--The puzzle will be stored in a one dimensional array of integers
+--but will expose itself as a two dimensional array
+
+Things that the sudoku application must do to solve a puzzle:
+
+-Identify the other cells which can interact with a given cell.
+These will from now on be referred to as neighbors.
