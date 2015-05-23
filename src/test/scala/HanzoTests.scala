@@ -32,4 +32,20 @@ class HanzoSpec extends FlatSpec {
     val expectedValues = Set(2,4)
     assert(calculatedValues == expectedValues)
   }
+
+  it should "identify which cells it can immediately solve with simple elimination" in {
+    val newSudoku = hanzo.stepSolve(sudoku)
+    val expectedGrid = Array(
+      0,4,6,0,0,7,3,0,0,
+      0,1,8,0,0,9,0,5,0,
+      5,7,0,0,0,0,0,6,4,
+      9,2,0,0,8,0,0,0,0,
+      0,0,0,7,6,3,0,0,0,
+      0,0,0,0,9,0,0,7,5,
+      6,3,0,0,0,0,0,0,8,
+      0,9,0,3,0,0,5,2,0,
+      0,0,2,4,0,0,6,0,0
+    )
+    assert(newSudoku.grid.deep == expectedGrid.deep)
+  }
 }

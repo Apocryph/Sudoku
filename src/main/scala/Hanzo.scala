@@ -11,13 +11,19 @@ object Hanzo {
       0,9,0,3,0,0,5,2,0,
       0,0,2,4,0,0,6,0,0
     )
-    val sudoku = new Sudoku(testPuzzle)
+    var sudoku = new Sudoku(testPuzzle)
+    println("Initial state:")
     println(sudoku.toString)
-    
+    println("\nPress any key to step solve")
     val hanzo = new Hanzo
-    val sudoku2 = hanzo.stepSolve(sudoku)
-    println("After one pass from Hazno")
-    println(sudoku2.toString)
+
+    var input = readLine()
+    while (input != "q"){
+      sudoku = hanzo.stepSolve(sudoku)
+      println("\n" + sudoku.toString)
+      println("\nPress any key to continue.  Press q to quit")
+      input = readLine()
+    }
   }
 }
 
