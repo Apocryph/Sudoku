@@ -1,3 +1,5 @@
+import scala.collection.breakOut
+
 object Hanzo {
   def main(args: Array[String]) = {
     val testPuzzle = Array(
@@ -76,25 +78,43 @@ class Hanzo {
       .map(index => sudoku.getValueAtIndex(index._1,index._2))
   }
 
+  def getAllRowIndices(sudoku: Sudoku): Set[Set[Tuple2[Int,Int]]] = {
+    val ys = (0 to 8)
+    ys.map(n => getRowIndices(sudoku, n)).toSet
+  }
+
+  def getRowIndices(sudoku: Sudoku, y: Int): Set[Tuple2[Int,Int]] = {
+    val xs = (0 to 8)
+    xs.map(n => (n,y)).toSet
+  }
+
   def stepSolve(sudoku: Sudoku): Sudoku = {
     //First step - figure out which indexes we can solve immediately
     val possibleIndices = (0 until (sudoku.numRows * sudoku.numCols))
     val mappedIndices = possibleIndices.map(i => sudoku.coordOneDimensionToTwo(i))
-    val possibleValues = mappedIndices.map(index =>
-        index -> getPossibleValuesForIndex(sudoku, index._1, index._2))
+    val possibleValues: Map[Tuple2[Int,Int],Set[Int]] =
+      mappedIndices.map(index =>
+        index -> getPossibleValuesForIndex(sudoku, index._1, index._2))(breakOut)
+
+    val singlePossibilitySolutions =
+      possibleValues.filter(value => value._2.size == 1)
+
+    val rawGrid = sudoku.grid.clone
+    for (value <- singlePossibilitySolutions)
+      rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
 
     //Second step - create a new sudoku as a clone of the original,
     //and apply the changes we've figured
     //Next TODO:  Rewrite this so that it's more functional.
     //Retrieve solutions, then operate as appropriate
-    val rawGrid = sudoku.grid.clone
-    for (value <- possibleValues)
-    {
+    //val rawGrid = sudoku.grid.clone
+    //for (value <- possibleValues)
+    //{
       //Solve for cells with only one possible value
-       if (value._2.size == 1)
-         rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
+       //if (value._2.size == 1)
+         //rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
        //Solve for cells whose possible values contain a unique value
-    }
+    //}
 
     new Sudoku(rawGrid)
   }
