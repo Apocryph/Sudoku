@@ -85,11 +85,15 @@ class Hanzo {
 
     //Second step - create a new sudoku as a clone of the original,
     //and apply the changes we've figured
+    //Next TODO:  Rewrite this so that it's more functional.
+    //Retrieve solutions, then operate as appropriate
     val rawGrid = sudoku.grid.clone
     for (value <- possibleValues)
     {
+      //Solve for cells with only one possible value
        if (value._2.size == 1)
          rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
+       //Solve for cells whose possible values contain a unique value
     }
 
     new Sudoku(rawGrid)
