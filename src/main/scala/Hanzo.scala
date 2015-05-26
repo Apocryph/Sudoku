@@ -70,7 +70,7 @@ class Hanzo {
         if (!(xVal == x && yVal == y))
           neighbors += Tuple2[Int,Int](xVal, yVal)
 
-    return neighbors
+    neighbors
   }
 
   def getPossibleValuesForIndex(sudoku: Sudoku, x: Int, y: Int) : Set[Int] = {
@@ -79,13 +79,47 @@ class Hanzo {
   }
 
   def getAllRowIndices(sudoku: Sudoku): Set[Set[Tuple2[Int,Int]]] = {
-    val ys = (0 to 8)
-    ys.map(n => getRowIndices(sudoku, n)).toSet
+    (0 to 8).map(n => getRowIndices(sudoku, n)).toSet
   }
 
   def getRowIndices(sudoku: Sudoku, y: Int): Set[Tuple2[Int,Int]] = {
-    val xs = (0 to 8)
-    xs.map(n => (n,y)).toSet
+    (0 to 8).map(n => (n,y)).toSet
+  }
+
+  def getAllColumnIndices(sudoku: Sudoku): Set[Set[Tuple2[Int,Int]]] = {
+    (0 to 8).map(n => getColumnIndices(sudoku,n)).toSet
+  }
+
+  def getColumnIndices(sudoku: Sudoku, x: Int): Set[Tuple2[Int,Int]] = {
+    (0 to 8).map(n => (x,n)).toSet
+  }
+
+  def getAllSectionIndices(sudoku: Sudoku): Set[Set[Tuple2[Int,Int]]] = {
+    val numSectionCols = sudoku.numCols / colsInASection
+    val numSectionRows = sudoku.numRows / rowsInASection
+    val xValues = (0 until numSectionCols)
+    val yValues = (0 until numSectionRows)
+
+    //TODO: Proper cross product
+    var sectionIndices = Set[Set[Tuple2[Int,Int]]]()
+    for (xVal <- xValues)
+      for (yVal <- yValues)
+        sectionIndices += getSectionIndices(sudoku, xVal, yVal)
+
+    sectionIndices
+  }
+
+  def getSectionIndices(sudoku: Sudoku, sectionX: Int, sectionY: Int): Set[Tuple2[Int,Int]] = {
+    val xValues = ((sectionX * colsInASection) until ((sectionX + 1) * colsInASection)).toSet
+    val yValues = ((sectionY * rowsInASection) until ((sectionY + 1) * rowsInASection)).toSet
+
+    //TODO: Proper cross product
+    var indices = Set[Tuple2[Int,Int]]()
+    for (xVal <- xValues)
+      for (yVal <- yValues)
+        indices += Tuple2[Int,Int](xVal,yVal)
+
+    indices
   }
 
   def stepSolve(sudoku: Sudoku): Sudoku = {
@@ -96,25 +130,15 @@ class Hanzo {
       mappedIndices.map(index =>
         index -> getPossibleValuesForIndex(sudoku, index._1, index._2))(breakOut)
 
+    //Indices where only one value is possible
     val singlePossibilitySolutions =
       possibleValues.filter(value => value._2.size == 1)
+
+    //TODO: Indices who are the only possible index for a particular value
 
     val rawGrid = sudoku.grid.clone
     for (value <- singlePossibilitySolutions)
       rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
-
-    //Second step - create a new sudoku as a clone of the original,
-    //and apply the changes we've figured
-    //Next TODO:  Rewrite this so that it's more functional.
-    //Retrieve solutions, then operate as appropriate
-    //val rawGrid = sudoku.grid.clone
-    //for (value <- possibleValues)
-    //{
-      //Solve for cells with only one possible value
-       //if (value._2.size == 1)
-         //rawGrid(sudoku.coordTwoDimensionToOne(value._1._1, value._1._2)) = value._2.head
-       //Solve for cells whose possible values contain a unique value
-    //}
 
     new Sudoku(rawGrid)
   }
