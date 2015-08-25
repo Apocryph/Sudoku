@@ -11,3 +11,4 @@ Things that the sudoku application must do to solve a puzzle:
 
 -Identify the other cells which can interact with a given cell.
 These will from now on be referred to as neighbors.
+
